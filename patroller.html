@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LekkeSafe — Patroller</title>
+<meta name="theme-color" content="#0c1220">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+
+  <h1 id="community-name">Loading…</h1>
+  <div id="verified-banner"></div>
+
+  <div id="status" class="status-msg" style="display:none;"></div>
+
+  <div class="plaque" id="checkin-plaque" style="display:none;">
+    <div class="plaque-label">YOUR SHIFT</div>
+    <div id="checkin-content"></div>
+  </div>
+
+  <h2>Live alerts</h2>
+  <p>New reports from your community appear here the moment they're sent.</p>
+
+  <div id="incident-feed" class="incident-feed">
+    <p class="helper-text">Listening for alerts…</p>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/app.js"></script>
+<script src="js/patroller.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
+  LekkeSafe.initPatrollerView();
+</script>
+</body>
+</html>

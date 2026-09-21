@@ -1,14 +1,18 @@
 // Bump VERSION any time app.js / styles.css / any CORE_ASSET changes,
 // or browsers will keep serving stale cached copies indefinitely.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE_NAME = `lekkesafe-${VERSION}`;
 
 const CORE_ASSETS = [
   'index.html',
   'register.html',
+  'dashboard.html',
+  'patroller.html',
   'offline.html',
   'css/styles.css',
   'js/app.js',
+  'js/incidents.js',
+  'js/patroller.js',
   'js/supabase-client.js',
   'manifest.json',
 ];

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LekkeSafe — Dashboard</title>
+<meta name="theme-color" content="#0c1220">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="shell" style="padding-bottom: 110px;">
+
+  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+
+  <h1 id="community-name">Loading…</h1>
+  <p id="member-address"></p>
+
+  <div id="status" class="status-msg" style="display:none;"></div>
+
+  <!-- ---------- Tonight's patrol ---------- -->
+  <div class="plaque">
+    <div class="plaque-label">TONIGHT'S PATROL</div>
+    <div id="patrol-content">
+      <p class="helper-text" style="margin:0;">Checking roster…</p>
+    </div>
+  </div>
+
+  <!-- ---------- Report an incident ---------- -->
+  <h2>Report something</h2>
+  <p>No typing needed — tap what's happening and we'll send your stand number and location straight to tonight's patrollers.</p>
+
+  <div class="report-grid" id="report-grid">
+    <button class="report-btn" data-type="intruder"><span class="emoji">🚨</span>Intruder in my yard</button>
+    <button class="report-btn" data-type="violence"><span class="emoji">🔥</span>Violence / fighting</button>
+    <button class="report-btn" data-type="theft_neighbour"><span class="emoji">👁️</span>Someone stealing next door</button>
+    <button class="report-btn" data-type="suspicious_person"><span class="emoji">🏠</span>Suspicious person loitering</button>
+    <button class="report-btn" data-type="medical_fire_kids"><span class="emoji">🆘</span>Medical / fire / kids alone</button>
+    <button class="report-btn" data-type="other"><span class="emoji">✏️</span>Other</button>
+  </div>
+
+  <!-- Other: free-text note -->
+  <div class="plaque" id="other-note-plaque" style="display:none;">
+    <div class="plaque-label">DESCRIBE WHAT'S HAPPENING</div>
+    <div class="field" style="margin-bottom:12px;">
+      <input type="text" id="other-note" placeholder="A few words is enough…">
+    </div>
+    <button class="btn btn-primary" id="other-send">Send report</button>
+  </div>
+
+  <footer class="legal">In a real emergency, also call 10111 (SAPS).</footer>
+</div>
+
+<!-- ---------- Floating panic button ---------- -->
+<button id="panic-btn" class="panic-fab">
+  <span class="panic-fab-label">PANIC</span>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/app.js"></script>
+<script src="js/incidents.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
+  LekkeSafe.initDashboard();
+</script>
+</body>
+</html>
