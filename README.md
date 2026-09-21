@@ -15,23 +15,27 @@ Community picker, member/patroller registration, one-tap incident reporting, pan
 - `css/styles.css` — the design system (navy/amber "night-watch" look).
 - `sw.js`, `manifest.json`, `offline.html`, `icons/` — PWA install + offline shell.
 
-## Setup (10 minutes)
+## Setup — mostly done already ✅
 
-1. **Create a Supabase project** (or reuse an existing one, in its own project — don't share tables with SA Recruiters).
-2. **Run the schema**: paste `database/schema.sql` into the SQL editor and run it.
-3. **Create a storage bucket** called `lekkesafe-photos`. Set it to public for now (Week 1 simplicity) — see the note in schema.sql about switching this to private + signed URLs before real house photos go live.
-4. **Bootstrap yourself as admin**: after you sign up a Supabase Auth user for yourself, run:
+Your Supabase project (`gwvltxmbvgodvuybnclv`) is already wired up:
+- ✅ All 6 tables + `admins` + RLS policies applied
+- ✅ `js/supabase-client.js` already has your real project URL and anon key filled in
+- ✅ Realtime turned on for `incidents` (live patroller alerts will work)
+- ✅ `lekkesafe-photos` storage bucket created, with policies letting a signed-in device upload and read photos
+
+**One thing left that only the dashboard can do** — Supabase doesn't expose this as SQL:
+1. **Turn on Anonymous sign-ins**: Supabase dashboard → Authentication → Providers → Anonymous → enable. Every device needs this silent identity for registration/reporting to work at all (it's what `auth.uid() = auth_user_id` in the RLS policies checks against).
+
+Then:
+2. **Bootstrap yourself as admin** — once you've registered (which creates an anonymous auth user for your device), find your user ID in Authentication → Users, and run in the SQL editor:
    ```sql
    insert into admins (auth_user_id) values ('your-auth-user-uuid');
    ```
-5. **Add at least one test community**:
+3. **Add at least one test community**:
    ```sql
    insert into communities (name, slug, province) values ('Ivory Park Ext 5', 'ivory-park-ext5', 'Gauteng');
    ```
-6. **Fill in `js/supabase-client.js`** with your project's URL and anon key (Project Settings → API).
-7. **Turn on Anonymous sign-ins**: Authentication → Providers → Anonymous → enable. Every device gets a silent, no-typing identity — this is what lets RLS policies (`auth.uid() = auth_user_id`) actually match, and what ties incident reports and panic alerts to the right member.
-8. **Turn on Realtime for `incidents`**: Database → Replication (or Table Editor → `incidents` → the Realtime toggle) → switch it on. Without this, `patroller.html` won't get live pushes and would need a manual refresh.
-9. Open `index.html` on a local server (not `file://` — PWA/service worker + geolocation need http/https). Quick option:
+4. Open `index.html` on a local server (not `file://` — PWA/service worker + geolocation need http/https). Quick option:
    ```
    npx serve .
    ```
