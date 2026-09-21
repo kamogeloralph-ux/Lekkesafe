@@ -282,6 +282,133 @@ footer.legal {
   text-align: center;
 }
 
+/* -------- report grid (one-tap incident buttons) -------- */
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.report-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-radius: var(--radius-sm);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 16px 10px;
+  cursor: pointer;
+  min-height: 92px;
+  justify-content: center;
+}
+.report-btn:active { transform: scale(0.97); }
+.report-btn .emoji { font-size: 1.6rem; }
+.report-btn-sending { opacity: 0.6; }
+
+/* -------- floating panic button -------- */
+
+.panic-fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(22px + var(--safe-bottom));
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--panic-red);
+  border: 3px solid #ef7166;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 20px rgba(193, 56, 43, 0.45);
+  cursor: pointer;
+  z-index: 50;
+  animation: panic-pulse 2.2s ease-in-out infinite;
+}
+.panic-fab:active { transform: scale(0.95); }
+.panic-fab.panic-active {
+  background: var(--panic-red-dim);
+  animation: none;
+}
+
+@keyframes panic-pulse {
+  0%, 100% { box-shadow: 0 6px 20px rgba(193, 56, 43, 0.45); }
+  50% { box-shadow: 0 6px 28px rgba(193, 56, 43, 0.8), 0 0 0 8px rgba(193, 56, 43, 0.12); }
+}
+
+/* -------- tonight's patrol / roster rows -------- */
+
+.patrol-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--navy-700);
+}
+.patrol-row:last-child { border-bottom: none; }
+.patrol-row .meta { font-size: 0.78rem; color: var(--ivory-dim); text-align: right; }
+
+.pill-live {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  color: var(--navy-950);
+  background: var(--teal);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+/* -------- incident feed (patroller view) -------- */
+
+.incident-feed { display: flex; flex-direction: column; gap: 10px; }
+
+.incident-card {
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.incident-card.incident-panic {
+  border-left-color: var(--panic-red);
+  background: rgba(193, 56, 43, 0.08);
+}
+.incident-card.incident-resolved { opacity: 0.55; }
+
+.incident-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.incident-type { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.incident-time { font-size: 0.75rem; color: var(--ivory-dim); }
+
+.incident-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+.incident-status { color: var(--amber); font-weight: 600; font-size: 0.78rem; }
+
+.incident-buttons { display: flex; gap: 8px; }
+.btn-small { padding: 9px 10px; font-size: 0.85rem; }
+
 @media (prefers-reduced-motion: reduce) {
   .btn { transition: none; }
+  .panic-fab { animation: none; }
 }
