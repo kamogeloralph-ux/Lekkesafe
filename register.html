@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LekkeSafe — Register</title>
+<meta name="theme-color" content="#0c1220">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+
+  <h1 id="community-heading">Register</h1>
+  <p id="community-sub">Loading community…</p>
+
+  <div class="role-tabs">
+    <button class="role-tab active" data-role="member">Community member</button>
+    <button class="role-tab" data-role="patroller">Patroller</button>
+  </div>
+
+  <div id="status" class="status-msg" style="display:none;"></div>
+
+  <!-- ---------- Member form ---------- -->
+  <form id="member-form">
+    <div class="plaque">
+      <div class="plaque-label">PROOF OF RESIDENCE</div>
+
+      <div class="field">
+        <label for="m-stand">Stand number</label>
+        <input type="text" id="m-stand" placeholder="e.g. 1042" required>
+      </div>
+      <div class="field">
+        <label for="m-street">Street</label>
+        <input type="text" id="m-street" placeholder="e.g. Protea Street" required>
+      </div>
+      <div class="field">
+        <label for="m-ward">Ward (optional)</label>
+        <input type="text" id="m-ward" placeholder="e.g. Ward 14">
+      </div>
+      <div class="field">
+        <label for="m-guardian">Guardian / head of household name</label>
+        <input type="text" id="m-guardian" placeholder="Full name" required>
+      </div>
+      <div class="field">
+        <label for="m-phone">Phone number</label>
+        <input type="tel" id="m-phone" placeholder="082 000 0000" required>
+      </div>
+      <div class="field">
+        <label>Photo of your house (for proof of residence)</label>
+        <label class="photo-upload" id="m-photo-label" for="m-photo">
+          <span id="m-photo-text">Tap to take or upload a photo</span>
+          <img id="m-photo-preview" class="photo-preview" style="display:none;">
+        </label>
+        <input type="file" id="m-photo" accept="image/*" capture="environment" required>
+      </div>
+      <p class="helper-text">Only visible to your community's admin and patrollers, for verification.</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="member-submit">Register as member</button>
+  </form>
+
+  <!-- ---------- Patroller form ---------- -->
+  <form id="patroller-form" style="display:none;">
+    <div class="plaque">
+      <div class="plaque-label">PATROLLER APPLICATION</div>
+
+      <div class="field">
+        <label for="p-name">Full name</label>
+        <input type="text" id="p-name" placeholder="Full name" required>
+      </div>
+      <div class="field">
+        <label for="p-phone">Phone number</label>
+        <input type="tel" id="p-phone" placeholder="082 000 0000" required>
+      </div>
+      <div class="field">
+        <label for="p-id">ID number</label>
+        <input type="text" id="p-id" placeholder="13-digit SA ID number" required>
+      </div>
+      <div class="field">
+        <label>Photo (for your patroller profile)</label>
+        <label class="photo-upload" id="p-photo-label" for="p-photo">
+          <span id="p-photo-text">Tap to take or upload a photo</span>
+          <img id="p-photo-preview" class="photo-preview" style="display:none;">
+        </label>
+        <input type="file" id="p-photo" accept="image/*" capture="environment" required>
+      </div>
+      <p class="helper-text">Your application is reviewed by your community admin before you can check in for shifts.</p>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="patroller-submit">Apply as patroller</button>
+  </form>
+
+  <footer class="legal">Wrong community? <a href="index.html">Go back</a></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
+  LekkeSafe.initRegisterPage();
+</script>
+</body>
+</html>
