@@ -86,6 +86,13 @@ const LekkeSafe = (() => {
   let currentCommunity = null;
 
   async function initRegisterPage() {
+    try {
+      await ensureAuthSession();
+    } catch (err) {
+      showStatus(err.message);
+      return;
+    }
+
     const slug = getQueryParam('community');
     const headingEl = document.getElementById('community-heading');
     const subEl = document.getElementById('community-sub');
@@ -190,9 +197,11 @@ const LekkeSafe = (() => {
       if (!photoFile) throw new Error('Please add a photo of your house.');
 
       const photoUrl = await uploadPhoto(photoFile, 'house-photos');
+      const user = await ensureAuthSession();
 
       const { error } = await supabaseClient.from('members').insert({
         community_id: currentCommunity.id,
+        auth_user_id: user.id,
         stand_number: document.getElementById('m-stand').value.trim(),
         street: document.getElementById('m-street').value.trim(),
         ward: document.getElementById('m-ward').value.trim() || null,
@@ -202,13 +211,13 @@ const LekkeSafe = (() => {
       });
       if (error) throw error;
 
-      showStatus('Registered! Your community admin will verify your details shortly.', 'success');
-      document.getElementById('member-form').reset();
-      document.getElementById('m-photo-preview').style.display = 'none';
+      showStatus('Registered! Taking you to your dashboard…', 'success');
+      setTimeout(() => {
+        window.location.href = `dashboard.html?community=${encodeURIComponent(currentCommunity.slug)}`;
+      }, 900);
     } catch (err) {
       console.error(err);
       showStatus(err.message || 'Something went wrong — please try again.');
-    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Register as member';
     }
@@ -226,9 +235,11 @@ const LekkeSafe = (() => {
       if (!photoFile) throw new Error('Please add a profile photo.');
 
       const photoUrl = await uploadPhoto(photoFile, 'patroller-photos');
+      const user = await ensureAuthSession();
 
       const { error } = await supabaseClient.from('patrollers').insert({
         community_id: currentCommunity.id,
+        auth_user_id: user.id,
         name: document.getElementById('p-name').value.trim(),
         phone: document.getElementById('p-phone').value.trim(),
         id_number: document.getElementById('p-id').value.trim(),
@@ -236,13 +247,13 @@ const LekkeSafe = (() => {
       });
       if (error) throw error;
 
-      showStatus('Application submitted! Your community admin will review it shortly.', 'success');
-      document.getElementById('patroller-form').reset();
-      document.getElementById('p-photo-preview').style.display = 'none';
+      showStatus('Application submitted! Taking you to your patroller view…', 'success');
+      setTimeout(() => {
+        window.location.href = `patroller.html?community=${encodeURIComponent(currentCommunity.slug)}`;
+      }, 900);
     } catch (err) {
       console.error(err);
       showStatus(err.message || 'Something went wrong — please try again.');
-    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Apply as patroller';
     }
