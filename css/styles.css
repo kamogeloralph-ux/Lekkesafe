@@ -1,1 +1,287 @@
+/* ==========================================================
+   LekkeSafe design system
+   Concept: the neighbourhood at night — streetlight amber
+   glow against navy sky, lettering borrowed from road/warning
+   signage, a duty-board layout for the patrol roster.
+   Red is reserved for one thing only: the panic button.
+   ========================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --navy-950: #0c1220;
+  --navy-900: #101a2c;
+  --navy-800: #172440;
+  --navy-700: #223255;
+  --ivory: #efe9dc;
+  --ivory-dim: #b9b3a4;
+  --amber: #f2a93b;
+  --amber-dim: #c98a2c;
+  --teal: #3e8c76;
+  --panic-red: #c1382b;
+  --panic-red-dim: #8f281e;
+
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  --font-body: 'Work Sans', -apple-system, sans-serif;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-padding-top: var(--safe-top);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--navy-950);
+  background-image:
+    radial-gradient(ellipse 600px 300px at 50% -10%, rgba(242, 169, 59, 0.08), transparent 60%);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  margin: 0 0 0.4em;
+}
+
+h1 { font-size: 1.9rem; line-height: 1.15; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.05rem; color: var(--amber); }
+
+p { color: var(--ivory-dim); max-width: 62ch; }
+
+a { color: var(--amber); }
+
+/* -------- layout shell -------- */
+
+.shell {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+  min-height: 100vh;
+}
+
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+.wordmark .lekke { color: var(--ivory); }
+.wordmark .safe { color: var(--amber); }
+.wordmark::before {
+  content: '';
+  display: inline-block;
+  width: 9px; height: 9px;
+  background: var(--amber);
+  margin-right: 8px;
+  transform: rotate(45deg);
+}
+
+/* -------- signage-plaque panel: the visual signature -------- */
+/* A duty-board / warning-sign plaque: thick top rule + clipped corner,
+   not a rounded soft-shadow card. */
+
+.plaque {
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-top: 3px solid var(--amber);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  padding: 20px 20px 22px;
+  margin-bottom: 16px;
+}
+
+.plaque-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--amber-dim);
+  margin-bottom: 10px;
+}
+
+/* -------- form elements -------- */
+
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ivory-dim);
+  margin-bottom: 6px;
+}
+
+.field input[type="text"],
+.field input[type="tel"],
+.field select {
+  width: 100%;
+  background: var(--navy-800);
+  border: 1px solid var(--navy-700);
+  border-radius: var(--radius-sm);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 14px;
+}
+
+.field input:focus,
+.field select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.field input::placeholder { color: #6b7488; }
+
+.photo-upload {
+  border: 1px dashed var(--navy-700);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  text-align: center;
+  color: var(--ivory-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: var(--navy-800);
+}
+.photo-upload.has-photo { border-color: var(--teal); color: var(--ivory); }
+.photo-upload input[type="file"] { display: none; }
+.photo-preview {
+  max-width: 100%;
+  max-height: 160px;
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+  display: block;
+}
+
+/* -------- buttons -------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.btn:active { transform: scale(0.98); }
+
+.btn-primary { background: var(--amber); color: var(--navy-950); }
+.btn-primary:hover { background: #f7b859; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ivory);
+  border: 1px solid var(--navy-700);
+}
+.btn-ghost:hover { border-color: var(--amber-dim); }
+
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* -------- community picker list -------- */
+
+.community-list { display: flex; flex-direction: column; gap: 10px; }
+
+.community-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-left: 3px solid var(--teal);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.community-row:hover { border-left-color: var(--amber); }
+.community-row .meta { font-size: 0.8rem; color: var(--ivory-dim); }
+.community-row .arrow { color: var(--amber); font-family: var(--font-display); }
+
+.search-field { margin-bottom: 18px; }
+.search-field input {
+  width: 100%;
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-radius: var(--radius-sm);
+  color: var(--ivory);
+  font-size: 1rem;
+  padding: 12px 14px;
+}
+
+/* -------- role tabs -------- */
+
+.role-tabs {
+  display: flex;
+  border: 1px solid var(--navy-700);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.role-tab {
+  flex: 1;
+  text-align: center;
+  padding: 11px 6px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--ivory-dim);
+  background: var(--navy-900);
+  cursor: pointer;
+  border: none;
+}
+.role-tab.active { background: var(--amber); color: var(--navy-950); }
+.role-tab + .role-tab { border-left: 1px solid var(--navy-700); }
+
+/* -------- status / feedback -------- */
+
+.status-msg {
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+.status-msg.error { background: rgba(193, 56, 43, 0.15); color: #ef9184; border: 1px solid var(--panic-red-dim); }
+.status-msg.success { background: rgba(62, 140, 118, 0.15); color: #8fd6bf; border: 1px solid var(--teal); }
+
+.helper-text { font-size: 0.78rem; color: var(--ivory-dim); margin-top: -8px; margin-bottom: 16px; }
+
+footer.legal {
+  margin-top: 32px;
+  font-size: 0.75rem;
+  color: #5b6376;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+}
