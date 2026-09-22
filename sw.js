@@ -1,6 +1,6 @@
 // Bump VERSION any time app.js / styles.css / any CORE_ASSET changes,
 // or browsers will keep serving stale cached copies indefinitely.
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE_NAME = `lekkesafe-${VERSION}`;
 
 const CORE_ASSETS = [
