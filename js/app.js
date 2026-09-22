@@ -62,9 +62,7 @@ const LekkeSafe = (() => {
           </span>
           <span class="arrow">→</span>
         `;
-        row.addEventListener('click', () => {
-          window.location.href = `register.html?community=${encodeURIComponent(c.slug)}`;
-        });
+        row.addEventListener('click', () => goToCommunity(row, c));
         listEl.appendChild(row);
       });
     }
@@ -79,6 +77,48 @@ const LekkeSafe = (() => {
         ));
       });
     }
+  }
+
+  // This device's anonymous session already persists in the browser (see
+  // ensureAuthSession in supabase-client.js) — it isn't re-created on every
+  // visit. What was missing is checking, before sending someone to
+  // register.html, whether *this* session already has a member or
+  // patroller row for the community they just tapped. If it does, skip
+  // registration entirely and go straight to their dashboard.
+  async function goToCommunity(row, community) {
+    row.disabled = true;
+    const arrow = row.querySelector('.arrow');
+    if (arrow) arrow.textContent = '…';
+
+    try {
+      const user = await ensureAuthSession();
+
+      const [{ data: member }, { data: patroller }] = await Promise.all([
+        supabaseClient
+          .from('members').select('id')
+          .eq('auth_user_id', user.id).eq('community_id', community.id)
+          .maybeSingle(),
+        supabaseClient
+          .from('patrollers').select('id')
+          .eq('auth_user_id', user.id).eq('community_id', community.id)
+          .maybeSingle(),
+      ]);
+
+      if (member) {
+        window.location.href = `dashboard.html?community=${encodeURIComponent(community.slug)}`;
+        return;
+      }
+      if (patroller) {
+        window.location.href = `patroller.html?community=${encodeURIComponent(community.slug)}`;
+        return;
+      }
+    } catch (err) {
+      // If the lookup itself fails (offline, etc.), fall through to
+      // registration rather than stranding the person on this screen.
+      console.error(err);
+    }
+
+    window.location.href = `register.html?community=${encodeURIComponent(community.slug)}`;
   }
 
   // ---------------- register.html ----------------
