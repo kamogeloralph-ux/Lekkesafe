@@ -26,6 +26,33 @@
     </div>
   </div>
 
+  <!-- ---------- Request patrol service ---------- -->
+  <h2>Ask a patroller to check on your house</h2>
+  <p>No one home, kids alone, or need an escort — request it here and a patroller can accept.</p>
+
+  <div class="report-grid" id="housewatch-grid">
+    <button class="report-btn" data-reason="no_one_home"><span class="emoji">🏠</span>No one home tonight</button>
+    <button class="report-btn" data-reason="kids_only"><span class="emoji">👶</span>Only kids inside</button>
+    <button class="report-btn" data-reason="escort_taxi_rank"><span class="emoji">🚕</span>Escort me from taxi rank</button>
+    <button class="report-btn" data-reason="other"><span class="emoji">✏️</span>Other</button>
+  </div>
+
+  <div class="plaque" id="housewatch-form-plaque" style="display:none;">
+    <div class="plaque-label">WHEN DO YOU NEED THIS?</div>
+    <div class="field">
+      <label for="hw-date">Date needed</label>
+      <input type="date" id="hw-date" required>
+    </div>
+    <div class="field" id="hw-note-field" style="display:none;">
+      <label for="hw-note">A few words about it</label>
+      <input type="text" id="hw-note" placeholder="e.g. back from 9pm, kids alone until then">
+    </div>
+    <button class="btn btn-primary" id="hw-send">Send request</button>
+  </div>
+
+  <h2>My requests</h2>
+  <div id="hw-list" class="admin-list"><p class="helper-text">Loading…</p></div>
+
   <!-- ---------- Report an incident ---------- -->
   <h2>Report something</h2>
   <p>No typing needed — tap what's happening and we'll send your stand number and location straight to tonight's patrollers.</p>
