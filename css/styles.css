@@ -130,6 +130,8 @@ a { color: var(--amber); }
 
 .field input[type="text"],
 .field input[type="tel"],
+.field input[type="date"],
+.field input[type="time"],
 .field select {
   width: 100%;
   background: var(--navy-800);
@@ -407,6 +409,40 @@ footer.legal {
 
 .incident-buttons { display: flex; gap: 8px; }
 .btn-small { padding: 9px 10px; font-size: 0.85rem; }
+
+/* -------- admin console -------- */
+
+.admin-panel { margin-bottom: 24px; }
+
+.admin-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+.admin-row {
+  background: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.admin-row.resolved { opacity: 0.55; border-left-color: var(--teal); }
+
+.admin-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.admin-row-title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.admin-row-time { font-size: 0.75rem; color: var(--ivory-dim); }
+
+.admin-row-thumb {
+  width: 100%;
+  max-width: 160px;
+  border-radius: var(--radius-sm);
+  margin: 8px 0;
+  display: block;
+}
+
+.admin-row-actions { display: flex; gap: 8px; margin-top: 10px; }
 
 @media (prefers-reduced-motion: reduce) {
   .btn { transition: none; }
