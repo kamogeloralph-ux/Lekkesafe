@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LekkeSafe — Admin</title>
+<meta name="theme-color" content="#0c1220">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <h1>Admin console</h1>
+
+  <div id="status" class="status-msg" style="display:none;"></div>
+  <div id="gate-message"></div>
+
+  <div id="admin-body" style="display:none;">
+
+    <div class="field">
+      <label for="community-select">Community</label>
+      <select id="community-select"></select>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" data-panel="approvals">Approvals</button>
+      <button class="role-tab" data-panel="roster">Roster</button>
+      <button class="role-tab" data-panel="incidents">Incidents</button>
+    </div>
+
+    <!-- ---------- Approvals ---------- -->
+    <div id="panel-approvals" class="admin-panel">
+      <h2>Pending members</h2>
+      <div id="pending-members" class="admin-list"><p class="helper-text">Loading…</p></div>
+
+      <h2>Pending patrollers</h2>
+      <div id="pending-patrollers" class="admin-list"><p class="helper-text">Loading…</p></div>
+    </div>
+
+    <!-- ---------- Roster ---------- -->
+    <div id="panel-roster" class="admin-panel" style="display:none;">
+      <div class="plaque">
+        <div class="plaque-label">SCHEDULE A SHIFT</div>
+        <form id="roster-form">
+          <div class="field">
+            <label for="r-patroller">Patroller</label>
+            <select id="r-patroller" required></select>
+          </div>
+          <div class="field">
+            <label for="r-date">Date</label>
+            <input type="date" id="r-date" required>
+          </div>
+          <div class="field">
+            <label for="r-start">Shift start</label>
+            <input type="time" id="r-start" value="18:00" required>
+          </div>
+          <div class="field">
+            <label for="r-end">Shift end</label>
+            <input type="time" id="r-end" value="06:00" required>
+          </div>
+          <div class="field">
+            <label for="r-reg">Car registration</label>
+            <input type="text" id="r-reg" placeholder="e.g. ND 123 456">
+          </div>
+          <div class="field">
+            <label for="r-color">Car color</label>
+            <input type="text" id="r-color" placeholder="e.g. White">
+          </div>
+          <div class="field">
+            <label for="r-model">Car make/model</label>
+            <input type="text" id="r-model" placeholder="e.g. Toyota Corolla">
+          </div>
+          <button type="submit" class="btn btn-primary" id="roster-submit">Add to roster</button>
+        </form>
+      </div>
+
+      <h2>Upcoming shifts</h2>
+      <div id="roster-list" class="admin-list"><p class="helper-text">Loading…</p></div>
+    </div>
+
+    <!-- ---------- Incidents ---------- -->
+    <div id="panel-incidents" class="admin-panel" style="display:none;">
+      <h2>Recent incidents</h2>
+      <div id="incident-overview" class="admin-list"><p class="helper-text">Loading…</p></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/app.js"></script>
+<script src="js/admin.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
+  LekkeSafe.initAdmin();
+</script>
+</body>
+</html>

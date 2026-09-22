@@ -1,19 +1,22 @@
-# LekkeSafe — Week 1 + Week 2
+# LekkeSafe — Week 1 + Week 2 + Week 3
 
-Community picker, member/patroller registration, one-tap incident reporting, panic button, and a live patroller alert feed. PWA, vanilla JS, Supabase backend — same stack as SA Recruiters.
+Community picker, member/patroller registration, one-tap incident reporting, panic button, live patroller alert feed, and an admin console. PWA, vanilla JS, Supabase backend — same stack as SA Recruiters.
 
 ## What's here
-- `database/schema.sql` — all 6 tables + RLS policies. Run this in the Supabase SQL editor first.
+- `database/schema.sql` — all 7 tables + RLS policies. Already applied to your live Supabase project.
 - `index.html` — search and pick your community.
 - `register.html` — member registration (stand number, street, ward, guardian, phone, house photo) and patroller application, as tabs.
 - `dashboard.html` — **member view**: tonight's patrol card, the 6 one-tap emergency buttons, and the floating panic button.
-- `patroller.html` — **patroller view**: shift check-in, and a live feed of incidents that updates instantly via Supabase Realtime (no refresh needed).
-- `js/app.js` — community list + registration form handling, photo upload.
+- `patroller.html` — **patroller view**: shift check-in, and a live feed of incidents via Supabase Realtime.
+- `admin.html` — **admin console** (new): pending member/patroller approvals with photo review, roster scheduling with native date/time pickers, and an incident overview with a Close action. Gated by the `is_admin()` check — only works from a device whose anonymous user ID is in the `admins` table.
+- `js/app.js` — community list + registration form handling, photo upload, anonymous auth bootstrap.
 - `js/incidents.js` — dashboard logic: one-tap reports, panic button, 15-minute live location share.
 - `js/patroller.js` — patroller logic: check-in, Realtime subscription, acknowledge/attend actions.
-- `js/supabase-client.js` — **put your Supabase URL + anon key here.** Also bootstraps a silent anonymous auth session on every device (see below — this is what lets RLS know who's reporting).
+- `js/admin.js` — admin logic: approvals, roster CRUD, incident overview.
+- `js/supabase-client.js` — your real Supabase URL + anon key, already filled in. Also bootstraps a silent anonymous auth session on every device.
 - `css/styles.css` — the design system (navy/amber "night-watch" look).
 - `sw.js`, `manifest.json`, `offline.html`, `icons/` — PWA install + offline shell.
+- `.github/workflows/main.yml` — auto-deploys to GitHub Pages on every push to `main`.
 
 ## Setup — mostly done already ✅
 
@@ -49,9 +52,9 @@ Then:
 ## Deploy
 Same pattern as SA Recruiters: push to a GitHub repo, deploy via GitHub Pages (or Actions if you want a build step later).
 
-## Known gaps to close before Week 3
-- Storage bucket is public in this setup — move house photos to a private bucket with signed URLs before this goes near real addresses.
-- No rate-limiting on registration or reporting yet (fine for testing, not for a public link) — worth adding before launch to guard against spam/false panic presses.
-- Patroller `id_number` is currently readable by any verified community member via the `patrollers` table — restrict it to admin-only (e.g. a view without that column) before launch.
-- There's no admin approval screen yet — verifying members/patrollers is done by hand in the Supabase Table Editor. That's the natural Week 3 piece alongside the patroller roster management UI.
+## Known gaps to close before real-world use
+- Storage bucket is public — move house photos to a private bucket with signed URLs before this goes near real addresses.
+- No rate-limiting on registration or reporting yet — worth adding before launch to guard against spam/false panic presses.
+- **Admin access is device-based, not password-based**: anyone whose anonymous browser session has been added to the `admins` table gets full admin rights from that device. There's no login screen. Fine for one or two trusted phones testing this; before handing `admin.html` to a CPF committee, this needs real Supabase Auth (email/password or magic link) instead of anonymous sessions.
 - The panic button's 15-minute location share stops if the browser tab is closed or the phone locks in some browsers (background geolocation is limited on the web without a native wrapper — worth testing on real devices before relying on it).
+- House-watch requests (the 6th table, `house_watch_requests`) has RLS policies but no UI yet — that's the natural next piece.
