@@ -33,12 +33,12 @@
     const gate = document.getElementById('gate-message');
 
     try {
-      await ensureAuthSession();
+      const user = await ensureAuthSession();
       const { data: isAdmin, error } = await supabaseClient.rpc('is_admin');
       if (error) throw error;
 
       if (!isAdmin) {
-        gate.innerHTML = `<div class="status-msg" style="display:block;">This device isn't set up as an admin. Ask an existing admin to add your user ID to the <code>admins</code> table.</div>`;
+        gate.innerHTML = `<div class="status-msg" style="display:block;">This device isn't set up as an admin. Its ID is <code>${escapeHtml(user.id)}</code> — ask an existing admin to add that exact ID to the <code>admins</code> table.</div>`;
         return;
       }
     } catch (err) {
@@ -73,17 +73,27 @@
     });
 
     setupTabs();
+    setupAdminRegisterForms();
     document.getElementById('roster-form').addEventListener('submit', handleRosterSubmit);
     loadAll();
   }
 
   function setupTabs() {
-    document.querySelectorAll('.role-tab').forEach(tab => {
+    document.querySelectorAll('#main-tabs .role-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#main-tabs .role-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
         document.getElementById(`panel-${tab.dataset.panel}`).style.display = 'block';
+      });
+    });
+
+    document.querySelectorAll('#register-subtabs .role-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#register-subtabs .role-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('admin-member-form').style.display = tab.dataset.subrole === 'member' ? 'block' : 'none';
+        document.getElementById('admin-patroller-form').style.display = tab.dataset.subrole === 'patroller' ? 'block' : 'none';
       });
     });
   }
@@ -340,6 +350,109 @@
 
   function statusLabel(status) {
     return { pending: 'Pending', acknowledged: 'Acknowledged', attended: 'Attended', closed: 'Closed' }[status] || status;
+  }
+
+  // ---------------- Register (admin adds someone directly) ----------------
+
+  function setupPhotoPreview(inputId, previewId, textId, labelId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    const text = document.getElementById(textId);
+    const label = document.getElementById(labelId);
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        text.textContent = file.name;
+        label.classList.add('has-photo');
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadPhoto(file, folder) {
+    const ext = file.name.split('.').pop();
+    const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseClient.storage.from('lekkesafe-photos').upload(path, file, { upsert: false });
+    if (error) throw error;
+    return supabaseClient.storage.from('lekkesafe-photos').getPublicUrl(path).data.publicUrl;
+  }
+
+  function setupAdminRegisterForms() {
+    setupPhotoPreview('am-photo', 'am-photo-preview', 'am-photo-text', 'am-photo-label');
+    setupPhotoPreview('ap-photo', 'ap-photo-preview', 'ap-photo-text', 'ap-photo-label');
+
+    document.getElementById('admin-member-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('am-submit');
+      btn.disabled = true; btn.textContent = 'Adding…';
+      try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const photoFile = document.getElementById('am-photo').files[0];
+        const photoUrl = photoFile ? await uploadPhoto(photoFile, 'house-photos') : null;
+
+        const { error } = await supabaseClient.from('members').insert({
+          community_id: currentCommunityId,
+          stand_number: document.getElementById('am-stand').value.trim(),
+          street: document.getElementById('am-street').value.trim(),
+          ward: document.getElementById('am-ward').value.trim() || null,
+          guardian_name: document.getElementById('am-guardian').value.trim(),
+          phone: document.getElementById('am-phone').value.trim(),
+          house_photo_url: photoUrl,
+          verified: true,
+          verified_by: user.id,
+          verified_at: new Date().toISOString(),
+        });
+        if (error) throw error;
+
+        showStatus('Member added and approved.', 'success');
+        document.getElementById('admin-member-form').reset();
+        document.getElementById('am-photo-preview').style.display = 'none';
+        loadPendingMembers();
+      } catch (err) {
+        console.error(err);
+        showStatus("Couldn't add member — try again.");
+      } finally {
+        btn.disabled = false; btn.textContent = 'Add member';
+      }
+    });
+
+    document.getElementById('admin-patroller-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('ap-submit');
+      btn.disabled = true; btn.textContent = 'Adding…';
+      try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const photoFile = document.getElementById('ap-photo').files[0];
+        const photoUrl = photoFile ? await uploadPhoto(photoFile, 'patroller-photos') : null;
+
+        const { error } = await supabaseClient.from('patrollers').insert({
+          community_id: currentCommunityId,
+          name: document.getElementById('ap-name').value.trim(),
+          phone: document.getElementById('ap-phone').value.trim(),
+          id_number: document.getElementById('ap-id').value.trim(),
+          photo_url: photoUrl,
+          verified: true,
+          verified_by: user.id,
+          verified_at: new Date().toISOString(),
+        });
+        if (error) throw error;
+
+        showStatus('Patroller added and approved.', 'success');
+        document.getElementById('admin-patroller-form').reset();
+        document.getElementById('ap-photo-preview').style.display = 'none';
+        loadPendingPatrollers();
+        loadPatrollerOptions();
+      } catch (err) {
+        console.error(err);
+        showStatus("Couldn't add patroller — try again.");
+      } finally {
+        btn.disabled = false; btn.textContent = 'Add patroller';
+      }
+    });
   }
 
   LekkeSafe.initAdmin = initAdmin;
