@@ -74,6 +74,8 @@
     loadTonightsPatrol();
     setupReportButtons();
     setupPanicButton();
+    setupHouseWatch();
+    loadMyHouseWatchRequests();
   }
 
   async function loadTonightsPatrol() {
@@ -238,6 +240,86 @@
       btn.classList.remove('panic-active');
       btn.querySelector('.panic-fab-label').textContent = 'PANIC';
     }
+  }
+
+  const HW_REASON_LABELS = {
+    no_one_home: '🏠 No one home tonight',
+    kids_only: '👶 Only kids inside',
+    escort_taxi_rank: '🚕 Escort from taxi rank',
+    other: '✏️ Other',
+  };
+  const HW_STATUS_LABELS = { pending: 'Waiting for a patroller', accepted: 'Accepted', declined: 'Declined', completed: 'Completed' };
+
+  let selectedHwReason = null;
+
+  function setupHouseWatch() {
+    document.querySelectorAll('#housewatch-grid .report-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedHwReason = btn.dataset.reason;
+        document.getElementById('housewatch-form-plaque').style.display = 'block';
+        document.getElementById('hw-note-field').style.display = selectedHwReason === 'other' ? 'block' : 'none';
+        if (!document.getElementById('hw-date').value) {
+          document.getElementById('hw-date').valueAsDate = new Date();
+        }
+        document.getElementById('housewatch-form-plaque').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+
+    document.getElementById('hw-send').addEventListener('click', async () => {
+      const btn = document.getElementById('hw-send');
+      const date = document.getElementById('hw-date').value;
+      if (!selectedHwReason) { showStatus('Pick a reason first.'); return; }
+      if (!date) { showStatus('Pick a date.'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const { error } = await supabaseClient.from('house_watch_requests').insert({
+          community_id: currentCommunity.id,
+          member_id: currentMember.id,
+          reason: selectedHwReason,
+          reason_note: selectedHwReason === 'other' ? (document.getElementById('hw-note').value.trim() || null) : null,
+          date_needed: date,
+        });
+        if (error) throw error;
+
+        showStatus('Request sent — a patroller can now accept it.', 'success');
+        document.getElementById('housewatch-form-plaque').style.display = 'none';
+        document.getElementById('hw-date').value = '';
+        document.getElementById('hw-note').value = '';
+        selectedHwReason = null;
+        loadMyHouseWatchRequests();
+      } catch (err) {
+        console.error(err);
+        showStatus("Couldn't send request — try again.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send request';
+      }
+    });
+  }
+
+  async function loadMyHouseWatchRequests() {
+    const el = document.getElementById('hw-list');
+    const { data, error } = await supabaseClient
+      .from('house_watch_requests')
+      .select('*')
+      .eq('member_id', currentMember.id)
+      .order('date_needed', { ascending: false })
+      .limit(10);
+
+    if (error) { el.innerHTML = `<p class="helper-text">Couldn't load your requests.</p>`; return; }
+    if (!data || data.length === 0) { el.innerHTML = `<p class="helper-text">No requests yet.</p>`; return; }
+
+    el.innerHTML = data.map(r => `
+      <div class="admin-row ${r.status === 'accepted' || r.status === 'completed' ? 'resolved' : ''}">
+        <div class="admin-row-head">
+          <span class="admin-row-title">${HW_REASON_LABELS[r.reason] || r.reason}</span>
+          <span class="admin-row-time">${r.date_needed}</span>
+        </div>
+        <div class="meta">${escapeHtml(r.reason_note || '')} ${HW_STATUS_LABELS[r.status] || r.status}</div>
+      </div>
+    `).join('');
   }
 
   function escapeHtml(str) {

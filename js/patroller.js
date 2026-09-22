@@ -73,6 +73,7 @@
     setupCheckIn();
     loadRecentIncidents();
     subscribeToIncidents();
+    loadHouseWatchRequests();
   }
 
   async function setupCheckIn() {
@@ -238,6 +239,54 @@
     const div = document.createElement('div');
     div.textContent = str ?? '';
     return div.innerHTML;
+  }
+
+  const HW_REASON_LABELS = {
+    no_one_home: '🏠 No one home tonight',
+    kids_only: '👶 Only kids inside',
+    escort_taxi_rank: '🚕 Escort from taxi rank',
+    other: '✏️ Other',
+  };
+
+  async function loadHouseWatchRequests() {
+    const el = document.getElementById('housewatch-feed');
+    const { data, error } = await supabaseClient
+      .from('house_watch_requests')
+      .select('*, members(stand_number, street, phone)')
+      .eq('community_id', currentCommunity.id)
+      .eq('status', 'pending')
+      .order('date_needed', { ascending: true });
+
+    if (error) { el.innerHTML = `<p class="helper-text">Couldn't load requests.</p>`; return; }
+    if (!data || data.length === 0) { el.innerHTML = `<p class="helper-text">No pending requests.</p>`; return; }
+
+    el.innerHTML = '';
+    data.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'admin-row';
+      row.innerHTML = `
+        <div class="admin-row-head">
+          <span class="admin-row-title">${HW_REASON_LABELS[r.reason] || r.reason}</span>
+          <span class="admin-row-time">${r.date_needed}</span>
+        </div>
+        <div class="meta">Stand ${escapeHtml(r.members?.stand_number || '?')}, ${escapeHtml(r.members?.street || '')} · ${escapeHtml(r.members?.phone || '')}${r.reason_note ? `<br>${escapeHtml(r.reason_note)}` : ''}</div>
+        <div class="admin-row-actions">
+          <button class="btn btn-primary btn-small" data-action="accept">Accept</button>
+          <button class="btn btn-ghost btn-small" data-action="decline">Decline</button>
+        </div>
+      `;
+      row.querySelector('[data-action="accept"]').addEventListener('click', () => respondToHouseWatch(r.id, 'accepted', row));
+      row.querySelector('[data-action="decline"]').addEventListener('click', () => respondToHouseWatch(r.id, 'declined', row));
+      el.appendChild(row);
+    });
+  }
+
+  async function respondToHouseWatch(id, status, rowEl) {
+    const update = { status };
+    if (status === 'accepted') update.accepted_by = currentPatroller.id;
+    const { error } = await supabaseClient.from('house_watch_requests').update(update).eq('id', id);
+    if (error) { showStatus("Couldn't update that request — try again."); return; }
+    rowEl.remove();
   }
 
   LekkeSafe.initPatrollerView = initPatrollerView;
