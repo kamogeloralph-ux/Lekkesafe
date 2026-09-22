@@ -11,7 +11,7 @@
 <body>
 <div class="shell">
 
-  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <div id="topbar"></div>
 
   <h1 id="community-heading">Register</h1>
   <p id="community-sub">Loading community…</p>
@@ -93,7 +93,7 @@
     <button type="submit" class="btn btn-primary" id="patroller-submit">Apply as patroller</button>
   </form>
 
-  <footer class="legal">Wrong community? <a href="index.html">Go back</a></footer>
+  <footer class="legal">Registering the wrong community? Use the back button above.</footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -103,6 +103,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
   }
+  LekkeSafe.renderTopBar({ back: true });
   LekkeSafe.initRegisterPage();
 </script>
 </body>

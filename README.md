@@ -14,9 +14,14 @@ Community picker, member/patroller registration, one-tap incident reporting, pan
 - `js/patroller.js` — patroller logic: check-in, Realtime subscription, acknowledge/attend actions.
 - `js/admin.js` — admin logic: approvals, roster CRUD, incident overview.
 - `js/supabase-client.js` — your real Supabase URL + anon key, already filled in. Also bootstraps a silent anonymous auth session on every device.
-- `css/styles.css` — the design system (navy/amber "night-watch" look).
+- `css/styles.css` — the design system (navy/amber "night-watch" look), including the standardized topbar.
 - `sw.js`, `manifest.json`, `offline.html`, `icons/` — PWA install + offline shell.
 - `.github/workflows/main.yml` — auto-deploys to GitHub Pages on every push to `main`.
+
+## Navigation
+Every page except `offline.html` now shares one topbar (built in `js/app.js`'s `renderTopBar()`): a back button on the left, the wordmark centered, and — on pages where a session matters (`dashboard.html`, `patroller.html`, `admin.html`) — a log-out button on the right. This matters more than it sounds: once installed as a home-screen PWA, there's no browser chrome at all, so an in-app back button is the only way to navigate back.
+
+Log out ends the device's anonymous session. It doesn't delete anyone's registration, but since identity here is per-device (no password), a logged-out device gets a brand-new anonymous identity next time — meaning a registered member/patroller would need to register again on that device to get back into their dashboard, and an admin would need to be re-added to the `admins` table by someone else. Both log-out buttons warn about this before acting; the admin one is more explicit since it's the higher-stakes case.
 
 ## Setup — mostly done already ✅
 

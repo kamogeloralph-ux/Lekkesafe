@@ -12,7 +12,7 @@
 <body>
 <div class="shell">
 
-  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <div id="topbar"></div>
 
   <h1>Which community are you in?</h1>
   <p>Find your neighbourhood to see tonight's patrollers, report an incident, or check in for a shift.</p>
@@ -39,6 +39,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
   }
+  LekkeSafe.renderTopBar();
   LekkeSafe.loadCommunityList();
 </script>
 </body>

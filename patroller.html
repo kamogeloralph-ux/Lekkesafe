@@ -11,7 +11,7 @@
 <body>
 <div class="shell">
 
-  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <div id="topbar"></div>
 
   <h1 id="community-name">Loading…</h1>
   <div id="verified-banner"></div>
@@ -43,6 +43,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
   }
+  LekkeSafe.renderTopBar({ back: true, logout: true });
   LekkeSafe.initPatrollerView();
 </script>
 </body>

@@ -11,7 +11,7 @@
 <body>
 <div class="shell">
 
-  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <div id="topbar"></div>
   <h1>Admin console</h1>
 
   <div id="status" class="status-msg" style="display:none;"></div>
@@ -146,6 +146,11 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
   }
+  LekkeSafe.renderTopBar({
+    back: true,
+    logout: true,
+    logoutWarning: "Log out of the admin console on this device?\n\nThis device's admin access is tied to its current session. After logging out, a NEW session starts next time — which is NOT in the admins table, so you'll lose admin access here until another admin re-adds you. Only do this if you mean to."
+  });
   LekkeSafe.initAdmin();
 </script>
 </body>

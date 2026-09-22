@@ -11,7 +11,7 @@
 <body>
 <div class="shell" style="padding-bottom: 110px;">
 
-  <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+  <div id="topbar"></div>
 
   <h1 id="community-name">Loading…</h1>
   <p id="member-address"></p>
@@ -91,6 +91,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
   }
+  LekkeSafe.renderTopBar({ back: true, logout: true });
   LekkeSafe.initDashboard();
 </script>
 </body>
