@@ -265,5 +265,41 @@ const LekkeSafe = (() => {
     return div.innerHTML;
   }
 
-  return { loadCommunityList, initRegisterPage };
+  // ---------------- Shared topbar: back + wordmark + optional log out ----------------
+  // Standardized across every page. logOutHref is where a successful log-out
+  // sends the person (usually index.html).
+
+  function renderTopBar({ back = false, logout = false, logOutHref = 'index.html', logoutWarning } = {}) {
+    const el = document.getElementById('topbar');
+    if (!el) return;
+
+    const defaultWarning =
+      "Log out of LekkeSafe on this device?\n\n" +
+      "If you're registered here, you'll need to register again on this device to get back into your dashboard — this doesn't delete your registration, it just ends this device's session.";
+
+    el.className = 'topbar';
+    el.innerHTML = `
+      <span class="topbar-side">${back ? '<button class="topbar-btn" id="topbar-back" aria-label="Back">‹</button>' : ''}</span>
+      <div class="wordmark"><span class="lekke">Lekke</span><span class="safe">Safe</span></div>
+      <span class="topbar-side">${logout ? '<button class="topbar-btn" id="topbar-logout" aria-label="Log out">⏻</button>' : ''}</span>
+    `;
+
+    if (back) {
+      document.getElementById('topbar-back').addEventListener('click', () => {
+        if (window.history.length > 1) window.history.back();
+        else window.location.href = 'index.html';
+      });
+    }
+
+    if (logout) {
+      document.getElementById('topbar-logout').addEventListener('click', async () => {
+        const ok = confirm(logoutWarning || defaultWarning);
+        if (!ok) return;
+        await supabaseClient.auth.signOut();
+        window.location.href = logOutHref;
+      });
+    }
+  }
+
+  return { loadCommunityList, initRegisterPage, renderTopBar };
 })();
