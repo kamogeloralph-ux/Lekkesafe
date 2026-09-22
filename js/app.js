@@ -56,8 +56,9 @@ const LekkeSafe = (() => {
         row.type = 'button';
         row.className = 'community-row';
         row.innerHTML = `
-          <span>
-            <span>${escapeHtml(c.name)}</span><br>
+          <span class="community-row-avatar">${escapeHtml((c.name || '?').trim().charAt(0).toUpperCase())}</span>
+          <span class="community-row-body">
+            <span class="name">${escapeHtml(c.name)}</span><br>
             <span class="meta">${escapeHtml(c.province || '')}</span>
           </span>
           <span class="arrow">→</span>
