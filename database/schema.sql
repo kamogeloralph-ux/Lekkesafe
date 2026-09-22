@@ -122,6 +122,15 @@ create index if not exists idx_house_watch_community on house_watch_requests(com
 -- Mirrors the SA Recruiters RLS pattern (is_admin() helper + per-table policies).
 -- ============================================================
 
+-- admins table must exist before is_admin() is defined — SQL-language
+-- functions are validated against the catalog at creation time, so
+-- creating is_admin() first fails with "relation admins does not exist".
+create table if not exists admins (
+  auth_user_id uuid primary key references auth.users(id) on delete cascade,
+  community_id uuid references communities(id), -- null = super-admin across all communities
+  created_at timestamptz not null default now()
+);
+
 -- Helper: is the current auth user an admin? Adjust to your admin-flagging
 -- mechanism (e.g. a claim, or an `admins` table) — placeholder shown here.
 create or replace function is_admin()
@@ -129,17 +138,12 @@ returns boolean
 language sql
 security definer
 stable
+set search_path = public, pg_temp
 as $$
   select exists (
     select 1 from admins where admins.auth_user_id = auth.uid()
   );
 $$;
-
-create table if not exists admins (
-  auth_user_id uuid primary key references auth.users(id) on delete cascade,
-  community_id uuid references communities(id), -- null = super-admin across all communities
-  created_at timestamptz not null default now()
-);
 
 alter table communities enable row level security;
 alter table members enable row level security;
@@ -156,14 +160,24 @@ create policy "communities_admin_write" on communities for all using (is_admin()
 -- members: self-insert on registration; self can read own row; admin full access
 create policy "members_self_insert" on members for insert with check (auth.uid() = auth_user_id);
 create policy "members_self_read" on members for select using (auth.uid() = auth_user_id or is_admin());
+create policy "members_patroller_read" on members for select using (
+  community_id in (
+    select community_id from patrollers
+    where auth_user_id = auth.uid() and verified = true
+  )
+); -- verified patrollers need this to see a requester's address when accepting a house-watch request
 create policy "members_admin_write" on members for update using (is_admin()) with check (is_admin());
 create policy "members_admin_delete" on members for delete using (is_admin());
+create policy "members_admin_insert" on members for insert with check (is_admin());
+-- lets an admin register a member on someone's behalf (door-to-door signup,
+-- or someone without their own device), in addition to self-registration
 
 -- patrollers: same self-insert/read pattern, verified ones are visible community-wide (for "tonight's patrollers")
 create policy "patrollers_self_insert" on patrollers for insert with check (auth.uid() = auth_user_id);
 create policy "patrollers_verified_read" on patrollers for select using (verified = true or auth.uid() = auth_user_id or is_admin());
 create policy "patrollers_admin_write" on patrollers for update using (is_admin()) with check (is_admin());
 create policy "patrollers_admin_delete" on patrollers for delete using (is_admin());
+create policy "patrollers_admin_insert" on patrollers for insert with check (is_admin());
 
 -- roster: readable by anyone in the community (members need to see tonight's patrol), writes by admin or the patroller checking themselves in
 create policy "roster_public_read" on roster for select using (true);
