@@ -24,8 +24,9 @@
       <select id="community-select"></select>
     </div>
 
-    <div class="role-tabs">
+    <div class="role-tabs" id="main-tabs">
       <button class="role-tab active" data-panel="approvals">Approvals</button>
+      <button class="role-tab" data-panel="register">Register</button>
       <button class="role-tab" data-panel="roster">Roster</button>
       <button class="role-tab" data-panel="incidents">Incidents</button>
     </div>
@@ -37,6 +38,54 @@
 
       <h2>Pending patrollers</h2>
       <div id="pending-patrollers" class="admin-list"><p class="helper-text">Loading…</p></div>
+    </div>
+
+    <!-- ---------- Register (admin adds someone directly) ---------- -->
+    <div id="panel-register" class="admin-panel" style="display:none;">
+      <p>For someone without their own phone, or faster door-to-door signup. Entries added here are approved immediately, but won't have their own app login — they're on the roster/address list only, unless they later register themselves on their own device.</p>
+
+      <div class="role-tabs" id="register-subtabs">
+        <button class="role-tab active" data-subrole="member">Member</button>
+        <button class="role-tab" data-subrole="patroller">Patroller</button>
+      </div>
+
+      <form id="admin-member-form">
+        <div class="plaque">
+          <div class="plaque-label">NEW MEMBER</div>
+          <div class="field"><label for="am-stand">Stand number</label><input type="text" id="am-stand" required></div>
+          <div class="field"><label for="am-street">Street</label><input type="text" id="am-street" required></div>
+          <div class="field"><label for="am-ward">Ward (optional)</label><input type="text" id="am-ward"></div>
+          <div class="field"><label for="am-guardian">Guardian / head of household name</label><input type="text" id="am-guardian" required></div>
+          <div class="field"><label for="am-phone">Phone number</label><input type="tel" id="am-phone" required></div>
+          <div class="field">
+            <label>Photo of the house (optional)</label>
+            <label class="photo-upload" id="am-photo-label" for="am-photo">
+              <span id="am-photo-text">Tap to choose from gallery or camera</span>
+              <img id="am-photo-preview" class="photo-preview" style="display:none;">
+            </label>
+            <input type="file" id="am-photo" accept="image/*">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="am-submit">Add member</button>
+      </form>
+
+      <form id="admin-patroller-form" style="display:none;">
+        <div class="plaque">
+          <div class="plaque-label">NEW PATROLLER</div>
+          <div class="field"><label for="ap-name">Full name</label><input type="text" id="ap-name" required></div>
+          <div class="field"><label for="ap-phone">Phone number</label><input type="tel" id="ap-phone" required></div>
+          <div class="field"><label for="ap-id">ID number</label><input type="text" id="ap-id" required></div>
+          <div class="field">
+            <label>Photo (optional)</label>
+            <label class="photo-upload" id="ap-photo-label" for="ap-photo">
+              <span id="ap-photo-text">Tap to choose from gallery or camera</span>
+              <img id="ap-photo-preview" class="photo-preview" style="display:none;">
+            </label>
+            <input type="file" id="ap-photo" accept="image/*">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="ap-submit">Add patroller</button>
+      </form>
     </div>
 
     <!-- ---------- Roster ---------- -->
